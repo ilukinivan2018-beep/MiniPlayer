@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Мини-плеер</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-mode="idle" data-status="stopped" data-page="0" data-dim="0">
+  <div class="bg">
+    <div class="bg-default"></div>
+    <div class="bg-layer" id="bgA"></div>
+    <div class="bg-layer" id="bgB"></div>
+    <div class="bg-shade"></div>
+  </div>
+
+  <div class="shift" id="shift">
+    <canvas class="viz" id="viz"></canvas>
+
+    <div class="pages" id="pages">
+      <!-- ============ 1. Плеер ============ -->
+      <section class="page" aria-label="Плеер">
+        <div class="player-wrap">
+          <div class="player" aria-live="polite">
+            <div class="cover" id="cover">
+              <div class="placeholder" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 3.5v10.1A3.75 3.75 0 1 0 12 17V8.2l6-1.5v5.4A3.75 3.75 0 1 0 20 15.5V2.6a.75.75 0 0 0-.93-.73l-8.5 2.13A.75.75 0 0 0 10 4.6z"/></svg>
+              </div>
+              <img id="imgA" alt="">
+              <img id="imgB" alt="">
+            </div>
+
+            <div class="meta">
+              <div class="chip"><span class="dot"></span><span id="app">Плеер</span></div>
+              <h1 class="title" id="title">—</h1>
+              <div class="artist" id="artist"></div>
+              <div class="album" id="album"></div>
+
+              <div class="progress" id="progress">
+                <div class="bar" id="bar" role="slider" aria-label="Позиция трека">
+                  <div class="track"><div class="fill" id="fill"></div></div>
+                  <div class="knob" id="knob"></div>
+                </div>
+                <div class="times"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+              </div>
+
+              <div class="controls">
+                <button class="btn small" id="prev" aria-label="Предыдущий трек">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.75a1 1 0 0 1 2 0v5.6l9.4-6.07A1.5 1.5 0 0 1 19.7 5.5v13a1.5 1.5 0 0 1-2.3 1.26L8 13.65v5.6a1 1 0 1 1-2 0z"/></svg>
+                </button>
+                <button class="btn play" id="toggle" aria-label="Пауза / воспроизведение">
+                  <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.9v14.2a1.4 1.4 0 0 0 2.12 1.2l11.6-7.1a1.4 1.4 0 0 0 0-2.4L9.12 3.7A1.4 1.4 0 0 0 7 4.9z"/></svg>
+                  <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="4" width="4.6" height="16" rx="1.6"/><rect x="13.9" y="4" width="4.6" height="16" rx="1.6"/></svg>
+                </button>
+                <button class="btn small" id="next" aria-label="Следующий трек">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4.75a1 1 0 1 0-2 0v5.6L6.6 4.28A1.5 1.5 0 0 0 4.3 5.5v13a1.5 1.5 0 0 0 2.3 1.26L16 13.65v5.6a1 1 0 1 0 2 0z"/></svg>
+                </button>
+                <div class="vol" id="vol" data-level="high" hidden>
+                  <button class="btn small" id="volBtn" aria-label="Громкость (повторный тап — выключить звук)">
+                    <svg class="ic ic-high" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path fill="currentColor" stroke="none" d="M3 9.4v5.2c0 .6.5 1 1 1h3l4.2 3.5c.7.6 1.8.1 1.8-.8V5.7c0-.9-1.1-1.4-1.8-.8L7 8.4H4c-.5 0-1 .4-1 1z"/><path d="M16.2 8.6a4.8 4.8 0 0 1 0 6.8"/><path d="M18.9 5.9a8.6 8.6 0 0 1 0 12.2"/></svg>
+                    <svg class="ic ic-low" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path fill="currentColor" stroke="none" d="M3 9.4v5.2c0 .6.5 1 1 1h3l4.2 3.5c.7.6 1.8.1 1.8-.8V5.7c0-.9-1.1-1.4-1.8-.8L7 8.4H4c-.5 0-1 .4-1 1z"/><path d="M16.2 8.6a4.8 4.8 0 0 1 0 6.8"/></svg>
+                    <svg class="ic ic-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path fill="currentColor" stroke="none" d="M3 9.4v5.2c0 .6.5 1 1 1h3l4.2 3.5c.7.6 1.8.1 1.8-.8V5.7c0-.9-1.1-1.4-1.8-.8L7 8.4H4c-.5 0-1 .4-1 1z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+                  </button>
+                  <div class="vol-slider">
+                    <div class="bar vbar" id="vbar" role="slider" aria-label="Громкость">
+                      <div class="track"><div class="fill" id="vfill"></div></div>
+                      <div class="knob" id="vknob"></div>
+                    </div>
+                    <span class="vol-val" id="volVal">0</span>
+                  </div>
+                </div>
+                <button class="btn small lyr-btn" id="lyrBtn" aria-label="Текст песни">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h11M4 11h11M4 16h7"/><path d="M19 4v10.5"/><circle cx="17" cy="16.5" r="2.2" fill="currentColor" stroke="none"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="idle">
+            <div class="big-clock" id="bigClock">--:--</div>
+            <div class="date" id="date"></div>
+            <div class="hint">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 3.5v10.1A3.75 3.75 0 1 0 12 17V8.2l6-1.5v5.4A3.75 3.75 0 1 0 20 15.5V2.6a.75.75 0 0 0-.93-.73l-8.5 2.13A.75.75 0 0 0 10 4.6z"/></svg>
+              <span id="hintText">Включи музыку — она появится здесь</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2. Текст песни ============ -->
+      <section class="page" aria-label="Текст песни">
+        <div class="ly-view" id="lyView" hidden><div class="ly-lines" id="lyLines"></div></div>
+        <div class="ly-plain" id="lyPlain" hidden></div>
+        <div class="ly-msg" id="lyMsg">Включи музыку — здесь появится текст</div>
+        <div class="ly-head">
+          <img class="ly-cover" id="lyCover" alt="">
+          <div class="t"><div class="ly-title" id="lyTitle"></div><div class="ly-artist" id="lyArtist"></div></div>
+        </div>
+      </section>
+
+      <!-- ============ 3. Монитор системы ============ -->
+      <section class="page" aria-label="Монитор системы">
+        <div class="mon">
+          <div class="mon-head"><h2>Система</h2><span id="gpuName"></span></div>
+          <div class="mon-grid">
+            <div class="mt" style="--c:#76d672"><div class="mt-label"><i></i>Видеокарта</div><div class="mt-val" id="mGpu">—</div><div class="mt-sub" id="mGpuSub"></div><canvas data-k="gpu"></canvas></div>
+            <div class="mt" style="--c:#5ab8ff"><div class="mt-label"><i></i>Видеопамять</div><div class="mt-val" id="mVram">—</div><div class="mt-sub" id="mVramSub"></div><canvas data-k="vram"></canvas></div>
+            <div class="mt" style="--c:#ff9f5a"><div class="mt-label"><i></i>Температура GPU</div><div class="mt-val" id="mTemp">—</div><div class="mt-sub" id="mTempSub"></div><canvas data-k="temp"></canvas></div>
+            <div class="mt" style="--c:#b49cff"><div class="mt-label"><i></i>Процессор</div><div class="mt-val" id="mCpu">—</div><div class="mt-sub" id="mCpuSub"></div><canvas data-k="cpu"></canvas></div>
+            <div class="mt" style="--c:#f7c948"><div class="mt-label"><i></i>Оперативная память</div><div class="mt-val" id="mRam">—</div><div class="mt-sub" id="mRamSub"></div><canvas data-k="ram"></canvas></div>
+            <div class="mt" style="--c:#4fd1c5"><div class="mt-label"><i></i>Сеть</div><div class="mt-val" id="mNet">—</div><div class="mt-sub" id="mNetSub"></div><canvas data-k="down"></canvas></div>
+          </div>
+          <div class="mon-top" id="monTop"></div>
+        </div>
+      </section>
+
+      <!-- ============ 4. Пульт ============ -->
+      <section class="page" aria-label="Пульт">
+        <div class="deck" id="deck"></div>
+      </section>
+    </div>
+
+    <div class="clock-mini" id="clockMini">--:--</div>
+    <nav class="dots" id="dots" aria-label="Страницы">
+      <button data-page="0" aria-label="Плеер"></button>
+      <button data-page="1" aria-label="Текст песни"></button>
+      <button data-page="2" aria-label="Монитор системы"></button>
+      <button data-page="3" aria-label="Пульт"></button>
+    </nav>
+  </div>
+
+  <div class="dim" id="dim"></div>
+
+  <script>if (new URLSearchParams(location.search).has('demo')) document.write('<script src="demo.js"><\/script>');</script>
+  <script src="app.js"></script>
+  <script src="player.js"></script>
+  <script src="lyrics.js"></script>
+  <script src="viz.js"></script>
+  <script src="monitor.js"></script>
+  <script src="deck.js"></script>
+  <script>MP.start();</script>
+</body>
+</html>

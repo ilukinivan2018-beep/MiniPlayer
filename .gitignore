@@ -1,0 +1,10 @@
+# окружение Python
+.venv/
+__pycache__/
+*.pyc
+
+# личное: профиль окна плеера, кэш текстов, журналы, свой пульт
+browser-profile/
+cache/
+logs/
+deck.json
