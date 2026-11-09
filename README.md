@@ -1,5 +1,7 @@
 # MiniPlayer — старый телефон как второй сенсорный экран
 
+[![Поддержать на Boosty](https://img.shields.io/badge/Boosty-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-f15f2c?logo=boosty&logoColor=white)](https://boosty.to/skazano)
+
 Превращает старый Android-телефон в маленький сенсорный дисплей рядом с клавиатурой:
 плеер с текстами песен, монитор видеокарты и пульт с кнопками. Страницы листаются свайпом.
 
@@ -114,7 +116,15 @@ web/               интерфейс: app.js (ядро, свайп, защит�
 
 ## Поддержать
 
-Если плеер пригодился, поставь ⭐. Это лучшая мотивация делать его дальше.
+Если плеер пригодился, поставь ⭐, а если хочется, поддержи рублём на **[Boosty](https://boosty.to/skazano)**.
+Донаты идут на развитие MiniPlayer и моего основного проекта «Сказано».
+
+## Другие проекты автора
+
+**«Сказано»** — программа голосового ввода для Windows: говоришь, и текст появляется там, где стоит курсор, в любой программе.
+Понимает русский язык, переводит между русским и английским и умеет расшифровывать созвоны.
+Распознавание работает прямо на компьютере, голос никуда не отправляется.
+Сейчас проект в закрытом тестировании и активно переделывается.
 
 ## Лицензия
 
@@ -129,3 +139,4 @@ pywinrt, pycaw, comtypes, psutil, nvidia-ml-py, numpy, SoundCard.
 a now-playing screen for any Windows media app with album-tinted visuals, an audio visualizer, time-synced lyrics (LRCLIB),
 an NVIDIA GPU / system monitor and a Stream-Deck-style button panel. Windows 10/11 only. Install: unzip and run
 `install.bat`, then launch the "Мини-плеер" desktop shortcut. Runs locally on `127.0.0.1`, no telemetry.
+Support the project on [Boosty](https://boosty.to/skazano).
