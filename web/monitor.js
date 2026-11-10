@@ -90,10 +90,11 @@
   async function tick() {
     timer = 0;
     if (MP.page !== 2 || document.hidden) { haveHist = false; return; }
-    try { render(await (await fetch('/api/sys' + (haveHist ? '' : '?hist=1'))).json()); } catch (e) {}
+    try { render(await (await fetch('/api/sys' + (haveHist ? '' : '?hist=1'))).json()); } catch (e) { MP.report('монитор: ' + (e.stack || e)); }
     if (MP.page === 2) timer = setTimeout(tick, 1000);
   }
   MP.on('page', p => { if (p === 2 && !timer) tick(); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && MP.page === 2 && !timer) tick(); });
   window.addEventListener('resize', () => canvases.forEach(spark));
+  MP.modules.add('monitor');
 })();

@@ -7,7 +7,7 @@ const MP = (() => {
   const PAGES = 4;
 
   const api = {
-    $, state: {}, page: 0, pages: PAGES, seeking: false,
+    $, state: {}, page: 0, pages: PAGES, seeking: false, modules: new Set(),
     on(evt, fn) { (listeners[evt] ||= []).push(fn); },
     emit(evt, data) { (listeners[evt] || []).forEach(fn => { try { fn(data); } catch (e) { console.error(e); } }); },
     post(path) {
@@ -15,6 +15,15 @@ const MP = (() => {
         .then(r => r.json()).catch(() => ({ ok: false }));
     },
   };
+
+  /* ---------- ошибки страницы — в журнал logs/client.log на компьютере ---------- */
+  let reported = 0;
+  api.report = text => {
+    if (++reported > 30) return;  // не засыпаем журнал, если ошибка повторяется
+    fetch('/api/log', { method: 'POST', headers: { 'X-MP': '1' }, body: String(text).slice(0, 800) }).catch(() => {});
+  };
+  addEventListener('error', e => { if (e.message) api.report(`${e.message} @ ${(e.filename || '').split('/').pop()}:${e.lineno}`); });
+  addEventListener('unhandledrejection', e => api.report('promise: ' + (e.reason && (e.reason.stack || e.reason.message) || e.reason)));
 
   /* ---------- позиция и статус трека (общие для плеера и текста) ---------- */
   const P = { base: 0, at: performance.now(), status: 'stopped', duration: 0, holdPos: 0, holdStatus: 0 };

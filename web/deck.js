@@ -99,10 +99,11 @@
       const m = tiles.find(t => t.type === 'minimize');
       if (m) m._active = !!d.minimized;
       render();
-    } catch (e) { setTimeout(load, 3000); }
+    } catch (e) { MP.report('пульт: ' + (e.stack || e)); setTimeout(load, 3000); }
   }
 
   MP.on('state', () => tiles.forEach(t => { if (t.type === 'mic' || t.type === 'mute' || t.type === 'ui') paint(t); }));
   MP.on('page', p => { if (p === 3) load(); });  // перечитываем deck.json — вдруг его поменяли
   load();
+  MP.modules.add('deck');
 })();

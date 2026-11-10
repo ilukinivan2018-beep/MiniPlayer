@@ -72,4 +72,5 @@
   MP.on('state', sync); MP.on('status', sync); MP.on('page', sync);
   MP.on('accent', () => { grad = null; });
   resize();
+  MP.modules.add('viz');
 })();

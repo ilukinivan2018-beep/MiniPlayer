@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Мини-плеер</title>
+<script>
+  // запоминаем файлы страницы, которые не загрузились, — тогда страница перезагрузится сама
+  window.MP_FAILED = [];
+  addEventListener('error', e => {
+    const t = e.target;
+    if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) MP_FAILED.push((t.src || t.href || '').split('/').pop());
+  }, true);
+</script>
 <link rel="stylesheet" href="app.css">
 </head>
 <body data-mode="idle" data-status="stopped" data-page="0" data-dim="0">
@@ -138,6 +146,22 @@
   <script src="viz.js"></script>
   <script src="monitor.js"></script>
   <script src="deck.js"></script>
-  <script>MP.start();</script>
+  <script>
+  (function () {
+    // все ли части страницы на месте? Если нет — пишем в журнал и перезагружаемся (до 5 попыток)
+    const parts = ['player', 'lyrics', 'viz', 'monitor', 'deck'];
+    const missing = typeof MP === 'undefined' ? ['app'] : parts.filter(p => !MP.modules.has(p));
+    const broken = MP_FAILED.concat(missing.filter(p => !MP_FAILED.includes(p + '.js')));
+    if (broken.length) {
+      const n = +(sessionStorage.getItem('mp-retry') || 0);
+      fetch('/api/log', { method: 'POST', headers: { 'X-MP': '1' }, body: `не загрузилось: ${broken.join(', ')} (попытка ${n + 1})` }).catch(() => {});
+      if (n < 5) { sessionStorage.setItem('mp-retry', n + 1); setTimeout(() => location.reload(), 1500 * (n + 1)); }
+      if (typeof MP === 'undefined') return;
+    } else {
+      sessionStorage.removeItem('mp-retry');
+    }
+    MP.start();
+  })();
+  </script>
 </body>
 </html>

@@ -151,6 +151,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(403, b"", "text/plain")
         url = urlparse(self.path)
         name = url.path.removeprefix("/api/")
+        if name == "log":  # ошибки со страницы — в logs/client.log, чтобы было видно, что пошло не так
+            size = min(int(self.headers.get("Content-Length") or 0), 4000)
+            text = self.rfile.read(size).decode("utf-8", "replace").replace("\n", " | ")
+            client_log(text)
+            return self._json({"ok": True})
         q = parse_qs(url.query)
         num = lambda k, d=0.0: float(q.get(k, [d])[0])  # noqa: E731
         try:
@@ -265,6 +270,27 @@ def supervise():
         time.sleep(1)
 
 
+_client_log_lock = threading.Lock()
+
+
+def client_log(text: str):
+    try:
+        os.makedirs(os.path.join(HERE, "logs"), exist_ok=True)
+        path = os.path.join(HERE, "logs", "client.log")
+        with _client_log_lock:
+            if os.path.exists(path) and os.path.getsize(path) > 512_000:  # не даём журналу разрастись
+                os.replace(path, path + ".old")
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')}  {text[:1000]}\n")
+    except OSError:
+        pass
+
+
+class Server(ThreadingHTTPServer):
+    daemon_threads = True
+    request_queue_size = 64  # браузер при загрузке открывает сразу много соединений
+
+
 def log(text: str):
     try:
         os.makedirs(os.path.join(HERE, "logs"), exist_ok=True)
@@ -291,10 +317,10 @@ def main():
     audio.start()
     hotkeys.start()
     sysmon.start()
-    httpd = ThreadingHTTPServer((HOST, PORT), Handler)
-    httpd.daemon_threads = True
+    httpd = Server((HOST, PORT), Handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     if "--open" in sys.argv:
+        time.sleep(1.0)  # даём модулям запуститься, чтобы окно не грузилось в самую горячую секунду старта
         open_window()
     keep = "--keep" in sys.argv
     while True:

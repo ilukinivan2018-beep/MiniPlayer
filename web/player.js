@@ -245,4 +245,5 @@
       if (!e.repeat) { flash('toggle'); $('toggle').click(); }
     }
   });
+  MP.modules.add('player');
 })();

@@ -87,4 +87,5 @@
     load(s);
   });
   MP.on('art', src => { $('lyCover').style.visibility = src ? 'visible' : 'hidden'; if (src) $('lyCover').src = src; });
+  MP.modules.add('lyrics');
 })();
