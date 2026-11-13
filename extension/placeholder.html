@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>📱 На втором экране</title>
+<link rel="icon" href="icons/32.png">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    min-height: 100vh; display: grid; place-items: center; padding: 24px;
+    background: radial-gradient(60% 60% at 30% 20%, rgba(124, 108, 255, .25), transparent 70%),
+                radial-gradient(50% 50% at 80% 90%, rgba(255, 111, 168, .18), transparent 70%), #0d0d13;
+    color: #f4f4f7; font-family: "Segoe UI", system-ui, sans-serif; text-align: center;
+  }
+  .card { max-width: 520px; }
+  img { width: 72px; height: 72px; margin-bottom: 20px; }
+  h1 { font-size: 26px; font-weight: 650; margin-bottom: 8px; }
+  .what { color: rgba(244, 244, 247, .7); font-size: 16px; margin-bottom: 28px; word-break: break-word; }
+  button {
+    font: inherit; font-size: 17px; font-weight: 600; color: #fff; cursor: pointer;
+    padding: 14px 28px; border: 0; border-radius: 999px;
+    background: linear-gradient(135deg, #7c6cff, #ff6fa8); box-shadow: 0 10px 30px -10px #7c6cff;
+  }
+  button:active { transform: scale(.97); }
+  .hint { margin-top: 22px; color: rgba(244, 244, 247, .5); font-size: 14px; line-height: 1.6; }
+  kbd { padding: 1px 7px; border-radius: 6px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .15); font: inherit; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img src="icons/128.png" alt="">
+    <h1>Видео сейчас на втором экране</h1>
+    <div class="what" id="what"></div>
+    <button id="back">Вернуть видео сюда</button>
+    <div class="hint">Или нажми <kbd>Esc</kbd> на втором экране, кнопку «Вернуть в браузер» на нём,<br>либо <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd>.</div>
+  </div>
+  <script src="placeholder.js"></script>
+</body>
+</html>

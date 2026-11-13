@@ -24,6 +24,7 @@ IDLE_EXIT = 90
 WEB = os.path.join(HERE, "web")
 ALLOWED_HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
 ORIGINS = {f"http://{h}" for h in ALLOWED_HOSTS}
+EXT_ALLOWED = {"toggle", "next", "prev", "seek", "volume", "mute"}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
          ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png"}
 
@@ -147,10 +148,14 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         # команды принимаем только от своей страницы: свой Host, свой Origin и наш заголовок
         origin = self.headers.get("Origin")
-        if not self._host_ok() or (origin and origin not in ORIGINS) or self.headers.get("X-MP") != "1":
+        # расширение «Видео на второй экран» тоже может слать команды, но только про музыку и громкость
+        from_ext = bool(origin) and origin.startswith(("chrome-extension://", "moz-extension://"))
+        if not self._host_ok() or (origin and origin not in ORIGINS and not from_ext) or self.headers.get("X-MP") != "1":
             return self._send(403, b"", "text/plain")
         url = urlparse(self.path)
         name = url.path.removeprefix("/api/")
+        if from_ext and name not in EXT_ALLOWED:  # пульт (запуск программ) расширениям недоступен
+            return self._send(403, b"", "text/plain")
         if name == "log":  # ошибки со страницы — в logs/client.log, чтобы было видно, что пошло не так
             size = min(int(self.headers.get("Content-Length") or 0), 4000)
             text = self.rfile.read(size).decode("utf-8", "replace").replace("\n", " | ")
